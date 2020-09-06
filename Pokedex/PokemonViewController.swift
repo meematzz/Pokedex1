@@ -2,7 +2,7 @@ import UIKit
 
 class PokemonViewController: UIViewController {
     var url: String!
-    var pokemonID: Int!
+    var pokemonID: Int?
     var caught: [Int]!
 
     @IBOutlet var nameLabel: UILabel!
@@ -36,12 +36,10 @@ class PokemonViewController: UIViewController {
                 let result = try JSONDecoder().decode(PokemonResult.self, from: data)
                 DispatchQueue.main.async {
                     self.pokemonID = result.id
-                    guard self.pokemonID != nil else {
-                        return
-                    }
+                    guard self.pokemonID != nil else {return}
                     self.navigationItem.title = self.capitalize(text: result.name)
                     self.nameLabel.text = self.capitalize(text: result.name)
-                    self.numberLabel.text = String(format: "#%03d", self.pokemonID)
+                    self.numberLabel.text = String(format: "#%03d", self.pokemonID!)
                     
                     for typeEntry in result.types {
                         if typeEntry.slot == 1 {
@@ -60,6 +58,8 @@ class PokemonViewController: UIViewController {
     }
 
     @IBAction func toggleCatch() {
+        
+        guard let pokemonID = pokemonID else {return}
         if caught.contains(pokemonID) {
             caught = caught.filter { $0 != pokemonID }
         }
